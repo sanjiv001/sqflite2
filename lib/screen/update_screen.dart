@@ -2,32 +2,39 @@
 
 import 'package:flutter/material.dart';
 import 'package:sqflite2/model/model.dart';
-import 'package:sqflite2/screen/home_screen.dart';
 import 'package:sqflite2/service/sql_service.dart';
 import 'package:sqflite2/widget/text_form_field.dart';
 
-class AddTaskScreen extends StatefulWidget {
-  final ToDoModel? toDoModel;
-  const AddTaskScreen({
+class UpdateTaskScreen extends StatefulWidget {
+  late ToDoModel? toDoModel;
+  int? id;
+  UpdateTaskScreen({
     super.key,
+    this.id,
     this.toDoModel,
   });
 
   @override
-  State<AddTaskScreen> createState() => _AddTaskScreenState();
+  State<UpdateTaskScreen> createState() => _UpdateTaskScreenState();
 }
 
-class _AddTaskScreenState extends State<AddTaskScreen> {
+class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   final titleController = TextEditingController();
   final taskdetailcontroller = TextEditingController();
   final idController = TextEditingController();
+
+  void initState() {
+    super.initState();
+    // Initialize toDoModel in initState
+    // toDoModel = ToDoModel(); // Initialize it with appropriate values
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.amber,
-        title: const Text("Add task"),
+        title: const Text(" Update Task"),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -102,19 +109,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   width: 160,
                   child: ElevatedButton(
                     onPressed: () async {
+                      String id = idController.text.trim();
+                      String title = titleController.text.trim();
+                      String detail = taskdetailcontroller.text.trim();
+
                       setState(() {
-                        insertData();
-                        print("added");
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HomeScreen(),
-                          ),
-                        );
+                        idController.text = '';
+                        titleController.text = '';
+                        idController.text = '';
+                        DateTime.now();
+
+                        print("Update");
                       });
                     },
                     child: const Text(
-                      "ADD",
+                      "UpDate",
                       style: TextStyle(
                           color: Color.fromARGB(255, 12, 12, 12),
                           fontWeight: FontWeight.bold,
@@ -130,11 +139,15 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  Future<dynamic> insertData() async {
+  Future<dynamic> updateData(ToDoModel toDoModel) async {
     final todomodel = ToDoModel(
-        title: titleController.text,
-        date: DateTime.now(),
-        detail: taskdetailcontroller.text);
-    await DatabaseService.insertToDoList(todomodel: todomodel);
+      title: toDoModel.title,
+      date: toDoModel.date,
+      detail: toDoModel.detail,
+      id: toDoModel.id,
+    );
+    await DatabaseService.updateToDoList(
+      todomodel: todomodel,
+    );
   }
 }

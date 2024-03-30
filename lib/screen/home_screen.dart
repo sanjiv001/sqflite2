@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite2/model/model.dart';
 import 'package:sqflite2/screen/add_screen.dart';
+import 'package:sqflite2/screen/update_screen.dart';
 import 'package:sqflite2/service/sql_service.dart';
+
+import '../model/model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,6 +16,11 @@ class _HomeScreenState extends State<HomeScreen> {
   late DatabaseService databaseService;
   late Future<List<ToDoModel>> toDoList;
   late final ToDoModel toDoModel;
+
+  final titleController = TextEditingController();
+  final taskdetailcontroller = TextEditingController();
+  final idController = TextEditingController();
+  int? id;
 
   @override
   void initState() {
@@ -76,39 +83,62 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Card(
-                    //     child: Column(
-                    //   mainAxisAlignment: MainAxisAlignment.start,
-                    //   children: [
-                    //     Text(
-                    //       snapshot.data![index].title.toString(),
-                    //     ),
-                    //     Text(
-                    //       snapshot.data![index].title.toString(),
-                    //     ),
-                    //     Text(
-                    //       snapshot.data![index].title.toString(),
-                    //     ),
-                    //     Text(
-                    //       snapshot.data![index].title.toString(),
-                    //     ),
-                    //   ],
-                    // )
                     child: ListTile(
-                      leading: CircleAvatar(
-                          child: Text(
-                        snapshot.data![index].id.toString(),
-                      )),
                       // trailing: Text(DateFormat(DateFormat.ABBR_MONTH)
                       //     .format(todomodel.date)),
                       trailing: SizedBox(
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {});
-                          },
-                          icon: Icon(Icons.delete),
+                        width: 100,
+                        child: Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => UpdateTaskScreen(
+                                      id: toDoModel.id,
+                                      toDoModel: ToDoModel(
+                                        id: snapshot.data![index].id,
+                                        title: snapshot.data![index].title,
+                                        date: snapshot.data![index].date,
+                                        detail: snapshot.data![index].detail,
+                                      ),
+                                      //  updateData( toDoModel : ToDoModel(title: snapshot.data![index].id,
+                                      //   date: date, detail: detail));
+
+                                      // id: snapshot.data![index].id,
+                                      // id: toDoModel.id,
+                                      // toDoModel: ToDoModel(
+                                      //    id: snapshot.data![index].id,
+                                      //   title: snapshot.data![index].title,
+                                      //   date: snapshot.data![index].date,
+                                      //   detail: snapshot.data![index].detail,
+                                      // ),
+                                    ),
+                                  ),
+                                );
+                                // updateData(snapshot.data![index]);
+
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //       builder: (context) => const HomeScreen()),
+                                // );
+                                setState(() {});
+                              },
+                              icon: Icon(Icons.edit),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  deleteData(snapshot.data![index]);
+                                });
+                              },
+                              icon: Icon(Icons.delete),
+                            ),
+                          ],
                         ),
                       ),
-
                       title: Text(
                         snapshot.data![index].title.toString(),
                         style: const TextStyle(
@@ -133,17 +163,27 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Future<dynamic> updateData() async {
-  //   final todomodel = ToDoModel(
-  //       title: title.text,
-  //       date: widget.toDoModel!.date,
-  //       detail: taskdetailcontroller.text);
-  //   await DatabaseService.updateToDoList(todomodel: todomodel);
-  // }
+  Future<dynamic> updateData(ToDoModel toDoModel) async {
+    final todomodel = ToDoModel(
+      title: toDoModel.title,
+      date: toDoModel.date,
+      detail: toDoModel.detail,
+      id: toDoModel.id,
+    );
+    await DatabaseService.updateToDoList(
+      todomodel: todomodel,
+    );
+  }
 
-  // Future<dynamic> deletedata() async {
-  //   DatabaseService.deleteToDoList(todomodel: todomodel!).then(
-  //     (e) => Navigator.pop(context),
-  //   );
-  // }
+  Future<dynamic> deleteData(ToDoModel toDoModel) async {
+    final todomodel = ToDoModel(
+      title: toDoModel.title,
+      date: toDoModel.date,
+      detail: toDoModel.detail,
+      id: toDoModel.id,
+    );
+    DatabaseService.deleteToDoList(
+      todomodel: todomodel,
+    );
+  }
 }

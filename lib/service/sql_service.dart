@@ -61,7 +61,7 @@ class DatabaseService {
         );
   }
 
-  static Future<void> updateToDoList({required ToDoModel todomodel}) async {
+  static Future<dynamic> updateToDoList({required ToDoModel todomodel}) async {
     final db = await _databaseService.database;
     await db.update('ToDoList', todomodel.toMap(),
         where: 'id = ?', whereArgs: [todomodel.id]);
@@ -72,7 +72,7 @@ class DatabaseService {
     // Get a reference to the database.
     final db = await _databaseService.database;
 
-    await db.delete(
+    return await db.delete(
       'ToDoList',
       where: 'id = ?',
       whereArgs: [todomodel.id],
